@@ -504,6 +504,89 @@
     margin-left: 12px;
   }
 
+  /* Katherine's Reminders */
+  .reminder-section {
+    background: linear-gradient(135deg, #1E3A5F, #1E40AF);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .reminder-section .section-title { color: white; }
+  .reminder-section .icon { background: rgba(255,255,255,.15); }
+
+  .reminder-carousel {
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .reminder-card {
+    text-align: center;
+    padding: 16px 24px;
+    max-width: 600px;
+  }
+  .reminder-quote {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    font-style: italic;
+    opacity: .95;
+  }
+  .reminder-source {
+    font-size: .78rem;
+    margin-top: 10px;
+    opacity: .6;
+  }
+  .reminder-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .reminder-nav-btn {
+    background: rgba(255,255,255,.15);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .reminder-nav-btn:hover { background: rgba(255,255,255,.3); }
+  .reminder-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .reminder-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    transition: all .3s;
+  }
+  .reminder-dot.active { background: white; transform: scale(1.3); }
+  .reminder-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: .7rem;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .reminder-tag.mindset { background: rgba(253,186,116,.3); color: #FDE68A; }
+  .reminder-tag.strategy { background: rgba(147,197,253,.3); color: #BFDBFE; }
+  .reminder-tag.strength { background: rgba(134,239,172,.3); color: #BBF7D0; }
+  .reminder-tag.interview { background: rgba(196,181,253,.3); color: #DDD6FE; }
+
   /* Networking */
   .net-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
   .net-card {
@@ -690,6 +773,20 @@
       </table>
     </div>
     <button class="add-btn" onclick="openModal('course')">+ Add Course</button>
+  </div>
+
+  <!-- Katherine's Reminders -->
+  <div class="reminder-section">
+    <div class="section-title">
+      <span class="icon">&#128140;</span>
+      Katherine's Reminders
+    </div>
+    <div class="reminder-carousel" id="reminder-carousel"></div>
+    <div class="reminder-nav">
+      <button class="reminder-nav-btn" onclick="prevReminder()">&#8249;</button>
+      <div class="reminder-dots" id="reminder-dots"></div>
+      <button class="reminder-nav-btn" onclick="nextReminder()">&#8250;</button>
+    </div>
   </div>
 
   <!-- Networking -->
@@ -1151,6 +1248,7 @@ function render() {
   renderCourses();
   renderNetwork();
   renderInsights();
+  renderReminders();
   save();
 }
 
@@ -1611,6 +1709,111 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter') saveModal();
   if (e.key === 'Escape') closeModal();
 });
+
+// ========== KATHERINE'S REMINDERS ==========
+const REMINDERS = [
+  {
+    quote: "You are NOT entry-level. Your Master's in Computer Science, diploma with Distinction, multiple programming languages, and 20+ years of experience place you in the mid-level SWE/DE category.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "strength"
+  },
+  {
+    quote: "Experience doesn't expire. Your older programming and computer vision work still demonstrates strong fundamentals. You can always re-activate skills with short, structured practice.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "mindset"
+  },
+  {
+    quote: "You don't need an employer to give you experience. You're already building it through courses, projects, and workflow improvements at work. You can independently create the portfolio you need.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "mindset"
+  },
+  {
+    quote: "You consistently underestimate yourself. The number of job-description skills you already know is unusually high. Your background across three decades of computing — from BASIC to Azure — is a strength, not a weakness.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "strength"
+  },
+  {
+    quote: "Feeling nervous is normal and is a sign you care. Do not interpret nerves as lack of readiness. If you were invited to interview, they already believe you are qualified.",
+    source: "Coaching Session - Jan 14, 2026",
+    tag: "interview"
+  },
+  {
+    quote: "Tell yourself: 'They called me because they think I can do it. My job is to show how I help people and solve problems, not to be perfect.'",
+    source: "Coaching Session - Jan 14, 2026",
+    tag: "interview"
+  },
+  {
+    quote: "You already communicate fine at work without scripts. When you answered without a script, you sounded more relaxed, natural, and focused on meaning. Trust yourself.",
+    source: "Coaching Session - Jan 14, 2026",
+    tag: "interview"
+  },
+  {
+    quote: "Your Excel automation story is your signature proof point. You built a reusable system that saved 1-2 days per month, and managers relied on it. Lead with this whenever they ask about workflow or impact.",
+    source: "Coaching Session - Jan 5, 2026",
+    tag: "strategy"
+  },
+  {
+    quote: "Spend 80% of your answer on the solution and results, 20% on the problem. Interviewers want to see problem-solving and delivery under pressure, not the pain itself.",
+    source: "Coaching Session - Dec 16, 2025",
+    tag: "strategy"
+  },
+  {
+    quote: "Quantify your impact with rough estimates. Even directional numbers — hours saved, percentage reduction — strengthen credibility. Don't downplay if the true estimate is higher. If it's 50%, say 50%.",
+    source: "Coaching Session - Dec 16, 2025",
+    tag: "strategy"
+  },
+  {
+    quote: "Even if you get an admin role, keep moving toward data engineering work. You can leave anytime for a better opportunity. The bridge role keeps you employed while you build toward your dream.",
+    source: "Coaching Session - Dec 16, 2025",
+    tag: "strategy"
+  },
+  {
+    quote: "Your new mindset framing: 'I am a mid-level software/data engineer with strong fundamentals, refreshed skills, and hands-on experience improving real systems.'",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "mindset"
+  },
+  {
+    quote: "You came into our call feeling like you had 'done nothing.' You left with a real direction, a strong foundation, and a clear plan. I'm really happy for you — you already have the core strengths needed.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "strength"
+  },
+  {
+    quote: "Treat your seasonal job as a Data Engineering sandbox: document the before/after process, add metrics, sketch the workflow. This one improvement alone can function as a portfolio project AND real-world DE experience.",
+    source: "Coaching Session - Nov 21, 2025",
+    tag: "strategy"
+  }
+];
+
+let currentReminder = Math.floor(Math.random() * REMINDERS.length);
+
+function renderReminders() {
+  const r = REMINDERS[currentReminder];
+  const tagLabels = { mindset: 'Mindset', strategy: 'Strategy', strength: 'Your Strength', interview: 'Interview Tip' };
+
+  document.getElementById('reminder-carousel').innerHTML = `
+    <div class="reminder-card">
+      <div class="reminder-quote">"${r.quote}"</div>
+      <div class="reminder-source">— ${r.source}</div>
+      <span class="reminder-tag ${r.tag}">${tagLabels[r.tag] || r.tag}</span>
+    </div>
+  `;
+
+  document.getElementById('reminder-dots').innerHTML = REMINDERS.map((_, i) =>
+    `<div class="reminder-dot ${i === currentReminder ? 'active' : ''}"></div>`
+  ).join('');
+}
+
+function nextReminder() {
+  currentReminder = (currentReminder + 1) % REMINDERS.length;
+  renderReminders();
+}
+function prevReminder() {
+  currentReminder = (currentReminder - 1 + REMINDERS.length) % REMINDERS.length;
+  renderReminders();
+}
+
+// Auto-rotate every 15 seconds
+setInterval(nextReminder, 15000);
 
 // ========== INIT ==========
 render();
