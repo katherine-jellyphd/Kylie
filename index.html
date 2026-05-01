@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kylie's Dream Progress Dashboard</title>
+<style>
+  :root {
+    --primary: #2563EB;
+    --primary-light: #60A5FA;
+    --primary-dark: #1D4ED8;
+    --primary-bg: #DBEAFE;
+    --accent: #3B82F6;
+    --accent-light: #93C5FD;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --bg: #F0F5FF;
+    --card: #FFFFFF;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --border: #E2E8F0;
+    --danger: #EF4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #1E40AF, #3B82F6, #60A5FA);
+    color: white;
+    padding: 36px 20px 20px;
+    text-align: center;
+  }
+  .header h1 { font-size: 2rem; margin-bottom: 4px; }
+  .header p { opacity: 0.9; font-size: 1rem; }
+
+  /* ===== RABBIT HERO ===== */
+  .rabbit-hero {
+    background: linear-gradient(180deg, #60A5FA 0%, #BFDBFE 40%, #86EFAC 40%, #4ADE80 100%);
+    padding: 0 20px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rabbit-scene {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    height: 220px;
+  }
+  .rabbit-progress-label {
+    text-align: center;
+    color: #1E3A5F;
+    font-weight: 700;
+    font-size: 1rem;
+    padding-top: 8px;
+  }
+  .rabbit-progress-label span { font-size: 1.8rem; color: var(--primary-dark); }
+
+  /* Ground path */
+  .ground-path {
+    position: absolute;
+    bottom: 40px;
+    left: 5%;
+    width: 90%;
+    height: 6px;
+    background: rgba(255,255,255,.5);
+    border-radius: 6px;
+  }
+  .ground-fill {
+    height: 100%;
+    background: white;
+    border-radius: 6px;
+    transition: width 1s ease;
+    box-shadow: 0 0 10px rgba(255,255,255,.6);
+  }
+
+  /* Carrot markers */
+  .carrot-markers {
+    position: absolute;
+    bottom: 28px;
+    left: 5%;
+    width: 90%;
+  }
+  .carrot {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+    transition: all .4s;
+    filter: grayscale(0.8) opacity(0.4);
+  }
+  .carrot.reached {
+    filter: grayscale(0) opacity(1);
+    transform: translateX(-50%) scale(1.2);
+  }
+  .carrot-label {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .6rem;
+    white-space: nowrap;
+    color: #1E3A5F;
+    font-weight: 600;
+  }
+
+  /* Rabbit */
+  .rabbit-container {
+    position: absolute;
+    bottom: 46px;
+    transition: left 1.2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .rabbit-svg {
+    transition: transform .6s ease;
+  }
+  .rabbit-container.jumping .rabbit-svg {
+    animation: bunnyJump 0.6s ease;
+  }
+  @keyframes bunnyJump {
+    0%   { transform: translateY(0) rotate(0deg); }
+    30%  { transform: translateY(-40px) rotate(-8deg); }
+    50%  { transform: translateY(-50px) rotate(-5deg); }
+    80%  { transform: translateY(-10px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+  }
+
+  /* Clouds */
+  .cloud {
+    position: absolute;
+    opacity: .35;
+    font-size: 2rem;
+    color: white;
+    animation: cloudDrift 20s linear infinite;
+  }
+  .cloud:nth-child(2) { animation-duration: 28s; animation-delay: -8s; top: 15px; font-size: 1.5rem; }
+  .cloud:nth-child(3) { animation-duration: 35s; animation-delay: -15s; top: 30px; font-size: 2.5rem; opacity: .2; }
+  @keyframes cloudDrift {
+    0%   { left: -10%; }
+    100% { left: 110%; }
+  }
+
+  /* Level badge */
+  .level-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.25); backdrop-filter: blur(4px);
+    padding: 6px 16px; border-radius: 20px;
+    font-size: .85rem; font-weight: 600; color: white;
+    margin-top: 6px;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Stats */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(37,99,235,.06);
+    border: 1px solid var(--border);
+  }
+  .stat-card .number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+  .stat-card .label { font-size: .82rem; color: var(--text-light); margin-top: 2px; }
+
+  /* Section */
+  .section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(37,99,235,.05);
+    border: 1px solid var(--border);
+  }
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-dark);
+  }
+  .section-title .icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 1rem;
+    background: var(--primary-bg);
+  }
+
+  /* Two Col */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 11px; top: 4px; bottom: 4px;
+    width: 3px; background: var(--primary-bg); border-radius: 3px;
+  }
+  .timeline-item { position: relative; margin-bottom: 18px; }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-dot {
+    position: absolute; left: -27px; top: 5px;
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 3px solid var(--accent-light); background: white;
+  }
+  .timeline-item.completed .timeline-dot { background: var(--success); border-color: var(--success); }
+  .timeline-item.active .timeline-dot {
+    background: var(--primary); border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(37,99,235,.2);
+  }
+  .timeline-date { font-size: .76rem; color: var(--text-light); margin-bottom: 1px; }
+  .timeline-title { font-weight: 600; font-size: .93rem; }
+  .timeline-desc { font-size: .82rem; color: var(--text-light); margin-top: 1px; }
+
+  /* Checklist */
+  .checklist { list-style: none; }
+  .checklist li {
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; font-size: .9rem;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--accent-light);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; cursor: pointer; transition: all .2s;
+  }
+  .check-box.done { background: var(--success); border-color: var(--success); }
+  .check-box.done::after { content: '\2713'; color: white; font-size: .8rem; font-weight: 700; }
+  .checklist li.done-item span.goal-text { text-decoration: line-through; color: var(--text-light); }
+
+  /* Skill */
+  .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .skill-item { display: flex; flex-direction: column; gap: 5px; }
+  .skill-label { display: flex; justify-content: space-between; font-size: .88rem; font-weight: 500; }
+  .skill-bar { height: 10px; background: var(--primary-bg); border-radius: 10px; overflow: hidden; }
+  .skill-fill { height: 100%; border-radius: 10px; transition: width .6s ease; }
+
+  /* Table */
+  .job-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  .job-table th {
+    text-align: left; font-size: .76rem; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--text-light); padding: 8px 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .job-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .job-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: .73rem; font-weight: 600;
+  }
+  .badge.applied { background: #E2E8F0; color: #475569; }
+  .badge.interview { background: #FEF3C7; color: #92400E; }
+  .badge.offer { background: #D1FAE5; color: #065F46; }
+  .badge.rejected { background: #FEE2E2; color: #991B1B; }
+  .badge.preparing { background: #DBEAFE; color: #1E40AF; }
+  .badge.done { background: #D1FAE5; color: #065F46; }
+  .badge.in-progress { background: #FEF3C7; color: #92400E; }
+  .badge.not-started { background: #E2E8F0; color: #475569; }
+
+  /* Buttons */
+  .add-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 10px; border: 2px dashed var(--accent-light);
+    background: transparent; color: var(--primary); font-size: .85rem;
+    cursor: pointer; transition: all .2s; margin-top: 12px; font-weight: 600;
+  }
+  .add-btn:hover { background: var(--primary); color: white; border-style: solid; }
+
+  .del-btn {
+    background: none; border: none; color: var(--danger); cursor: pointer;
+    font-size: .85rem; opacity: .4; transition: opacity .2s; padding: 2px 6px;
+  }
+  .del-btn:hover { opacity: 1; }
+
+  .edit-btn {
+    background: none; border: none; color: var(--primary); cursor: pointer;
+    font-size: .8rem; opacity: .4; transition: opacity .2s; padding: 2px 6px;
+  }
+  .edit-btn:hover { opacity: 1; }
+
+  .item-actions { display: flex; gap: 2px; flex-shrink: 0; margin-left: auto; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(15,23,42,.45); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; padding: 28px;
+    width: 90%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal h3 { margin-bottom: 16px; font-size: 1.1rem; color: var(--primary-dark); }
+  .modal label { display: block; font-size: .83rem; font-weight: 600; margin-bottom: 4px; margin-top: 12px; color: var(--text-light); }
+  .modal input, .modal select, .modal textarea {
+    width: 100%; padding: 10px 12px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: .9rem; font-family: inherit;
+    transition: border-color .2s;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus {
+    outline: none; border-color: var(--primary-light);
+  }
+  .modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+  .btn {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    font-size: .9rem; font-weight: 600; cursor: pointer; transition: all .2s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: #cbd5e1; }
+
+  .footer {
+    text-align: center; padding: 20px; color: var(--text-light); font-size: .8rem;
+  }
+
+  .range-val { font-weight: 700; color: var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Kylie's Dream Dashboard</h1>
+  <p>Self-Learning & Career Journey Progress Tracker</p>
+</div>
+
+<!-- RABBIT HERO -->
+<div class="rabbit-hero">
+  <!-- clouds -->
+  <span class="cloud" style="top:10px">&#9729;</span>
+  <span class="cloud">&#9729;</span>
+  <span class="cloud">&#9729;</span>
+
+  <div class="rabbit-scene" id="rabbit-scene">
+    <!-- Carrot markers rendered by JS -->
+    <div class="carrot-markers" id="carrot-markers"></div>
+
+    <!-- Ground path -->
+    <div class="ground-path">
+      <div class="ground-fill" id="ground-fill" style="width:0%"></div>
+    </div>
+
+    <!-- Rabbit -->
+    <div class="rabbit-container" id="rabbit-container" style="left:5%">
+      <svg class="rabbit-svg" width="70" height="80" viewBox="0 0 70 80" id="rabbit-svg">
+        <!-- Left ear -->
+        <ellipse cx="22" cy="14" rx="7" ry="18" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
+        <ellipse cx="22" cy="14" rx="4" ry="13" fill="#BFDBFE"/>
+        <!-- Right ear -->
+        <ellipse cx="48" cy="14" rx="7" ry="18" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
+        <ellipse cx="48" cy="14" rx="4" ry="13" fill="#BFDBFE"/>
+        <!-- Body -->
+        <ellipse cx="35" cy="58" rx="18" ry="20" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
+        <!-- Head -->
+        <circle cx="35" cy="36" r="16" fill="#F0F5FF" stroke="#93C5FD" stroke-width="1.5"/>
+        <!-- Eyes -->
+        <circle cx="29" cy="34" r="2.5" fill="#1E3A5F"/>
+        <circle cx="41" cy="34" r="2.5" fill="#1E3A5F"/>
+        <circle cx="30" cy="33" r="1" fill="white"/>
+        <circle cx="42" cy="33" r="1" fill="white"/>
+        <!-- Nose -->
+        <ellipse cx="35" cy="39" rx="2" ry="1.5" fill="#F9A8D4"/>
+        <!-- Mouth -->
+        <path d="M33 41 Q35 44 37 41" fill="none" stroke="#94A3B8" stroke-width="1" stroke-linecap="round"/>
+        <!-- Cheeks -->
+        <circle cx="24" cy="39" r="3" fill="#FBCFE8" opacity=".4"/>
+        <circle cx="46" cy="39" r="3" fill="#FBCFE8" opacity=".4"/>
+        <!-- Tail -->
+        <circle cx="52" cy="62" r="5" fill="white" stroke="#BFDBFE" stroke-width="1"/>
+        <!-- Feet -->
+        <ellipse cx="25" cy="76" rx="8" ry="4" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1"/>
+        <ellipse cx="45" cy="76" rx="8" ry="4" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="rabbit-progress-label" id="rabbit-label">
+    <span id="pct-display">0%</span> Overall Progress
+    <br>
+    <span class="level-badge" id="level-badge">Lv.1 Baby Bunny</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="two-col">
+    <!-- Milestones -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">&#128197;</span>
+        Milestone Timeline
+      </div>
+      <div class="timeline" id="timeline"></div>
+      <button class="add-btn" onclick="openModal('milestone')">+ Add Milestone</button>
+    </div>
+
+    <!-- Weekly Goals -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">&#9989;</span>
+        This Week's Goals
+      </div>
+      <ul class="checklist" id="checklist"></ul>
+      <button class="add-btn" onclick="openModal('goal')">+ Add Goal</button>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">&#128170;</span>
+      Skills Progress
+    </div>
+    <div class="skill-grid" id="skills"></div>
+    <button class="add-btn" onclick="openModal('skill')">+ Add Skill</button>
+  </div>
+
+  <!-- Jobs -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">&#128188;</span>
+      Job Application Tracker
+    </div>
+    <div style="overflow-x:auto">
+      <table class="job-table">
+        <thead>
+          <tr><th>Company</th><th>Position</th><th>Date</th><th>Status</th><th>Notes</th><th></th></tr>
+        </thead>
+        <tbody id="jobs-body"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="openModal('job')">+ Add Application</button>
+  </div>
+
+  <!-- Courses -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">&#128218;</span>
+      Learning Resources & Courses
+    </div>
+    <div style="overflow-x:auto">
+      <table class="job-table">
+        <thead>
+          <tr><th>Course / Resource</th><th>Platform</th><th>Progress</th><th>Target</th><th></th></tr>
+        </thead>
+        <tbody id="courses-body"></tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="openModal('course')">+ Add Course</button>
+  </div>
+
+  <div class="footer">Made with care for Kylie</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+// ========== DATA ==========
+const STORAGE_KEY = 'kylie_dashboard_v2';
+
+const DEFAULT_DATA = {
+  milestones: [
+    { id: 1, date: '2025/10', title: 'Start Career Coaching', desc: 'Signed coaching contract with Katherine, defined career goals', status: 'completed' },
+    { id: 2, date: '2025/11', title: 'Build DE/SWE Resume', desc: 'Positioned as mid-level SWE/DE, identified projects & skills spine', status: 'completed' },
+    { id: 3, date: '2025/12', title: 'Interview Prep & Mock Interviews', desc: 'Structured answers, self-intro editing, rapid summarization drills', status: 'completed' },
+    { id: 4, date: '2026/01', title: 'Active Job Applications', desc: 'Applied to Salvation Army, ICBC, completed multiple interview rounds', status: 'completed' },
+    { id: 5, date: '2026/02', title: 'Technical Interview Mastery', desc: 'Lynxedge mock interview, technical Q&A prep, cover letter polished', status: 'completed' },
+    { id: 6, date: '2026/03-04', title: 'Continue Applications & Upskill', desc: 'Apply for DE/SWE roles, build Upwork portfolio, clean up GitHub', status: 'active' },
+    { id: 7, date: '2026/05', title: 'Portfolio & LinkedIn Optimization', desc: 'Upload projects to GitHub, update LinkedIn headline, build online presence', status: 'upcoming' },
+    { id: 8, date: '2026/05/31', title: 'Land Dream Role!', desc: 'Secure IT Support or Data Engineering position in Vancouver', status: 'upcoming' },
+  ],
+  goals: [
+    { id: 1, text: 'Clean up GitHub and upload at least one recent project', done: false },
+    { id: 2, text: 'Update LinkedIn headline for DE/SWE identity', done: false },
+    { id: 3, text: 'Document seasonal job automation as mini-DE project (workflow + metrics)', done: false },
+    { id: 4, text: 'Practice 2 easy LeetCode questions this week', done: false },
+    { id: 5, text: 'Write 2-3 bullets for each major project on DE/SWE resume', done: false },
+    { id: 6, text: 'Share DE/SWE resume draft with Yining for technical review', done: false },
+    { id: 7, text: 'Apply to 2 new Data Engineering / SWE positions', done: false },
+    { id: 8, text: 'Start building Upwork portfolio with Katherine', done: false },
+  ],
+  skills: [
+    { id: 1, name: 'IT Service Desk & Remote Support', pct: 95, color: '#1E40AF,#60A5FA' },
+    { id: 2, name: 'Windows / macOS / Linux', pct: 90, color: '#2563EB,#93C5FD' },
+    { id: 3, name: 'Microsoft 365 Administration', pct: 85, color: '#3B82F6,#BFDBFE' },
+    { id: 4, name: 'Networking (LAN/Wi-Fi/VPN/DNS/DHCP)', pct: 80, color: '#1D4ED8,#60A5FA' },
+    { id: 5, name: 'Python / PowerShell / PHP Scripting', pct: 65, color: '#2563EB,#93C5FD' },
+    { id: 6, name: 'SQL & Database (MySQL, SQL Server)', pct: 60, color: '#1E40AF,#BFDBFE' },
+    { id: 7, name: 'Azure & Databricks (Learning)', pct: 30, color: '#3B82F6,#60A5FA' },
+    { id: 8, name: 'Data Engineering Tools (Spark, Airflow)', pct: 15, color: '#1D4ED8,#93C5FD' },
+    { id: 9, name: 'Interview & Communication Skills', pct: 70, color: '#2563EB,#BFDBFE' },
+    { id: 10, name: 'Resume & Self-Presentation', pct: 75, color: '#1E40AF,#60A5FA' },
+  ],
+  jobs: [
+    { id: 1, company: 'The Salvation Army', position: 'Administration Coordinator', date: '2025/12/04', status: 'interview', notes: 'Completed 2 rounds of interviews, Grace Health Services' },
+    { id: 2, company: 'ICBC', position: 'IT Service Desk Rep', date: '2026/01', status: 'interview', notes: 'North Vancouver, Temp Full Time, $31-33/hr' },
+    { id: 3, company: 'Lynxedge Solutions', position: 'IT Technician - Tier 1', date: '2026/01/22', status: 'applied', notes: 'Resume + cover letter submitted, $48K-54K, Vancouver' },
+  ],
+  courses: [
+    { id: 1, name: 'Diploma in Computing Studies & IS', platform: 'Douglas College', progress: 'done', target: '2023' },
+    { id: 2, name: 'MSc in Computer Science', platform: 'CUHK', progress: 'done', target: '2001' },
+    { id: 3, name: 'Cisco Networking Essentials', platform: 'Cisco', progress: 'done', target: '2024' },
+    { id: 4, name: 'Azure & Databricks Fundamentals', platform: 'Online', progress: 'in-progress', target: '2026/05' },
+    { id: 5, name: 'LeetCode Practice (Easy level)', platform: 'LeetCode', progress: 'not-started', target: '2026/05' },
+    { id: 6, name: 'Data Engineering Tools (Airflow, Spark, dbt)', platform: 'Self-study', progress: 'not-started', target: '2026/06' },
+    { id: 7, name: 'Upwork Portfolio Building', platform: 'Upwork', progress: 'not-started', target: '2026/05' },
+  ]
+};
+
+let data;
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  data = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+} catch(e) {
+  data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+let nextId = 100;
+function genId() { return ++nextId; }
+
+// ========== PROGRESS CALCULATION ==========
+function calcOverall() {
+  let scores = [];
+
+  // Milestones: completed / total
+  if (data.milestones.length) {
+    scores.push(data.milestones.filter(m => m.status === 'completed').length / data.milestones.length);
+  }
+  // Goals: done / total
+  if (data.goals.length) {
+    scores.push(data.goals.filter(g => g.done).length / data.goals.length);
+  }
+  // Skills: average pct
+  if (data.skills.length) {
+    scores.push(data.skills.reduce((s, k) => s + k.pct, 0) / data.skills.length / 100);
+  }
+  // Courses: done=1, in-progress=0.5, not-started=0
+  if (data.courses.length) {
+    const cScore = data.courses.reduce((s, c) => {
+      if (c.progress === 'done') return s + 1;
+      if (c.progress === 'in-progress') return s + 0.5;
+      return s;
+    }, 0) / data.courses.length;
+    scores.push(cScore);
+  }
+
+  if (!scores.length) return 0;
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 100);
+}
+
+function getLevel(pct) {
+  if (pct >= 90) return { lv: 5, name: 'Legendary Rabbit', emoji: '&#x1F451;' };
+  if (pct >= 70) return { lv: 4, name: 'Super Rabbit', emoji: '&#x1F31F;' };
+  if (pct >= 50) return { lv: 3, name: 'Growing Rabbit', emoji: '&#x1F407;' };
+  if (pct >= 25) return { lv: 2, name: 'Little Hopper', emoji: '&#x1F331;' };
+  return { lv: 1, name: 'Baby Bunny', emoji: '&#x1F95A;' };
+}
+
+// ========== RABBIT RENDER ==========
+function renderRabbit() {
+  const pct = calcOverall();
+  const level = getLevel(pct);
+
+  // Percentage display
+  document.getElementById('pct-display').textContent = pct + '%';
+  document.getElementById('level-badge').innerHTML = `${level.emoji} Lv.${level.lv} ${level.name}`;
+
+  // Ground fill
+  document.getElementById('ground-fill').style.width = pct + '%';
+
+  // Rabbit position (5% to 90% of path)
+  const rabbitLeft = 5 + (pct / 100) * 85;
+  const container = document.getElementById('rabbit-container');
+  container.style.left = `calc(${rabbitLeft}% - 35px)`;
+
+  // Rabbit size scales with level (0.7 to 1.2)
+  const scale = 0.65 + level.lv * 0.12;
+  document.getElementById('rabbit-svg').style.transform = `scale(${scale})`;
+  document.getElementById('rabbit-svg').style.transformOrigin = 'bottom center';
+
+  // Jump animation
+  container.classList.remove('jumping');
+  void container.offsetWidth; // reflow
+  container.classList.add('jumping');
+
+  // Carrot markers at milestone positions
+  const markers = document.getElementById('carrot-markers');
+  if (data.milestones.length > 1) {
+    markers.innerHTML = data.milestones.map((m, i) => {
+      const pos = (i / (data.milestones.length - 1)) * 100;
+      const reached = m.status === 'completed';
+      return `<div class="carrot ${reached ? 'reached' : ''}" style="left:${pos}%">
+        &#x1F955;
+        <div class="carrot-label">${esc(m.title.length > 12 ? m.title.slice(0, 12) + '..' : m.title)}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ========== RENDER FUNCTIONS ==========
+function render() {
+  renderRabbit();
+  renderStats();
+  renderTimeline();
+  renderGoals();
+  renderSkills();
+  renderJobs();
+  renderCourses();
+  save();
+}
+
+function renderStats() {
+  const coursesTotal = data.courses.length;
+  const coursesDone = data.courses.filter(c => c.progress === 'done').length;
+  const jobsApplied = data.jobs.length;
+  const interviews = data.jobs.filter(j => j.status === 'interview').length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="number">${coursesTotal}</div><div class="label">Courses Planned</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--success)">${coursesDone}</div><div class="label">Courses Completed</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--primary)">${jobsApplied}</div><div class="label">Jobs Tracked</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--warning)">${interviews}</div><div class="label">Interviews</div></div>
+  `;
+}
+
+function renderTimeline() {
+  const el = document.getElementById('timeline');
+  el.innerHTML = data.milestones.map(m => `
+    <div class="timeline-item ${m.status}">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">${m.date}
+        <span class="item-actions" style="display:inline-flex; margin-left:8px;">
+          <button class="edit-btn" onclick="openModal('milestone',${m.id})" title="Edit">&#9998;</button>
+          <button class="del-btn" onclick="deleteItem('milestones',${m.id})" title="Delete">&#10005;</button>
+        </span>
+      </div>
+      <div class="timeline-title">${esc(m.title)}</div>
+      <div class="timeline-desc">${esc(m.desc)}</div>
+    </div>
+  `).join('');
+}
+
+function renderGoals() {
+  const el = document.getElementById('checklist');
+  el.innerHTML = data.goals.map(g => `
+    <li class="${g.done ? 'done-item' : ''}">
+      <div class="check-box ${g.done ? 'done' : ''}" onclick="toggleGoal(${g.id})"></div>
+      <span class="goal-text">${esc(g.text)}</span>
+      <span class="item-actions">
+        <button class="del-btn" onclick="deleteItem('goals',${g.id})" title="Delete">&#10005;</button>
+      </span>
+    </li>
+  `).join('');
+}
+
+const SKILL_COLORS = ['#2563EB,#60A5FA','#1D4ED8,#93C5FD','#3B82F6,#BFDBFE','#1E40AF,#60A5FA','#2563EB,#93C5FD','#1D4ED8,#BFDBFE'];
+
+function renderSkills() {
+  const el = document.getElementById('skills');
+  el.innerHTML = data.skills.map((s, i) => {
+    const c = s.color || SKILL_COLORS[i % SKILL_COLORS.length];
+    return `
+    <div class="skill-item">
+      <div class="skill-label">
+        <span>${esc(s.name)}</span>
+        <span>
+          ${s.pct}%
+          <button class="edit-btn" onclick="openModal('skill',${s.id})" title="Edit">&#9998;</button>
+          <button class="del-btn" onclick="deleteItem('skills',${s.id})" title="Delete">&#10005;</button>
+        </span>
+      </div>
+      <div class="skill-bar"><div class="skill-fill" style="width:${s.pct}%; background:linear-gradient(90deg,${c})"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderJobs() {
+  const el = document.getElementById('jobs-body');
+  el.innerHTML = data.jobs.map(j => `
+    <tr>
+      <td><strong>${esc(j.company)}</strong></td>
+      <td>${esc(j.position)}</td>
+      <td>${j.date || '--'}</td>
+      <td><span class="badge ${j.status}">${statusLabel(j.status)}</span></td>
+      <td>${esc(j.notes) || '--'}</td>
+      <td class="item-actions">
+        <button class="edit-btn" onclick="openModal('job',${j.id})" title="Edit">&#9998;</button>
+        <button class="del-btn" onclick="deleteItem('jobs',${j.id})" title="Delete">&#10005;</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderCourses() {
+  const el = document.getElementById('courses-body');
+  el.innerHTML = data.courses.map(c => `
+    <tr>
+      <td>${esc(c.name)}</td>
+      <td>${esc(c.platform)}</td>
+      <td><span class="badge ${c.progress}">${progressLabel(c.progress)}</span></td>
+      <td>${c.target || '--'}</td>
+      <td class="item-actions">
+        <button class="edit-btn" onclick="openModal('course',${c.id})" title="Edit">&#9998;</button>
+        <button class="del-btn" onclick="deleteItem('courses',${c.id})" title="Delete">&#10005;</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function statusLabel(s) {
+  return { applied:'Applied', interview:'Interview', offer:'Offer', rejected:'Rejected', preparing:'Preparing' }[s] || s;
+}
+function progressLabel(p) {
+  return { done:'Done', 'in-progress':'In Progress', 'not-started':'Not Started' }[p] || p;
+}
+function esc(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// ========== ACTIONS ==========
+function toggleGoal(id) {
+  const g = data.goals.find(x => x.id === id);
+  if (g) { g.done = !g.done; render(); }
+}
+
+function deleteItem(list, id) {
+  if (!confirm('Are you sure you want to delete this?')) return;
+  data[list] = data[list].filter(x => x.id !== id);
+  render();
+}
+
+// ========== MODAL ==========
+let editingType = null;
+let editingId = null;
+
+function openModal(type, id) {
+  editingType = type;
+  editingId = id || null;
+  const modal = document.getElementById('modal');
+  let html = '';
+
+  if (type === 'goal') {
+    const item = id ? data.goals.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Goal</h3>
+      <label>Goal</label>
+      <input id="m-text" value="${item ? esc(item.text) : ''}" placeholder="e.g. Complete 2 LeetCode problems">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  if (type === 'milestone') {
+    const item = id ? data.milestones.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Milestone</h3>
+      <label>Date</label>
+      <input id="m-date" value="${item ? item.date : ''}" placeholder="e.g. 2026/06">
+      <label>Title</label>
+      <input id="m-title" value="${item ? esc(item.title) : ''}" placeholder="e.g. Complete Portfolio">
+      <label>Description</label>
+      <input id="m-desc" value="${item ? esc(item.desc) : ''}" placeholder="Details...">
+      <label>Status</label>
+      <select id="m-status">
+        <option value="upcoming" ${item && item.status==='upcoming' ? 'selected':''}>Upcoming</option>
+        <option value="active" ${item && item.status==='active' ? 'selected':''}>In Progress</option>
+        <option value="completed" ${item && item.status==='completed' ? 'selected':''}>Completed</option>
+      </select>
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  if (type === 'skill') {
+    const item = id ? data.skills.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Skill</h3>
+      <label>Skill Name</label>
+      <input id="m-name" value="${item ? esc(item.name) : ''}" placeholder="e.g. TypeScript">
+      <label>Progress: <span class="range-val" id="range-label">${item ? item.pct : 0}%</span></label>
+      <input type="range" id="m-pct" min="0" max="100" value="${item ? item.pct : 0}" oninput="document.getElementById('range-label').textContent=this.value+'%'">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  if (type === 'job') {
+    const item = id ? data.jobs.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Job Application</h3>
+      <label>Company</label>
+      <input id="m-company" value="${item ? esc(item.company) : ''}" placeholder="e.g. Google">
+      <label>Position</label>
+      <input id="m-position" value="${item ? esc(item.position) : ''}" placeholder="e.g. Frontend Developer">
+      <label>Date Applied</label>
+      <input id="m-date" value="${item ? item.date : ''}" placeholder="e.g. 2026/05/01">
+      <label>Status</label>
+      <select id="m-status">
+        <option value="preparing" ${item && item.status==='preparing' ? 'selected':''}>Preparing</option>
+        <option value="applied" ${item && item.status==='applied' ? 'selected':''}>Applied</option>
+        <option value="interview" ${item && item.status==='interview' ? 'selected':''}>Interview</option>
+        <option value="offer" ${item && item.status==='offer' ? 'selected':''}>Offer</option>
+        <option value="rejected" ${item && item.status==='rejected' ? 'selected':''}>Rejected</option>
+      </select>
+      <label>Notes</label>
+      <input id="m-notes" value="${item ? esc(item.notes) : ''}" placeholder="Any notes...">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  if (type === 'course') {
+    const item = id ? data.courses.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Course</h3>
+      <label>Course Name</label>
+      <input id="m-name" value="${item ? esc(item.name) : ''}" placeholder="e.g. Node.js Masterclass">
+      <label>Platform</label>
+      <input id="m-platform" value="${item ? esc(item.platform) : ''}" placeholder="e.g. Udemy, Coursera">
+      <label>Progress</label>
+      <select id="m-progress">
+        <option value="not-started" ${item && item.progress==='not-started' ? 'selected':''}>Not Started</option>
+        <option value="in-progress" ${item && item.progress==='in-progress' ? 'selected':''}>In Progress</option>
+        <option value="done" ${item && item.progress==='done' ? 'selected':''}>Done</option>
+      </select>
+      <label>Target Date</label>
+      <input id="m-target" value="${item ? item.target : ''}" placeholder="e.g. 2026/06">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  modal.innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(() => { const inp = modal.querySelector('input'); if(inp) inp.focus(); }, 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  editingType = null;
+  editingId = null;
+}
+
+function saveModal() {
+  const type = editingType;
+  const id = editingId;
+
+  if (type === 'goal') {
+    const text = document.getElementById('m-text').value.trim();
+    if (!text) return;
+    if (id) { const item = data.goals.find(x => x.id === id); item.text = text; }
+    else { data.goals.push({ id: genId(), text, done: false }); }
+  }
+
+  if (type === 'milestone') {
+    const date = document.getElementById('m-date').value.trim();
+    const title = document.getElementById('m-title').value.trim();
+    const desc = document.getElementById('m-desc').value.trim();
+    const status = document.getElementById('m-status').value;
+    if (!title) return;
+    if (id) {
+      const item = data.milestones.find(x => x.id === id);
+      Object.assign(item, { date, title, desc, status });
+    } else {
+      data.milestones.push({ id: genId(), date, title, desc, status });
+    }
+  }
+
+  if (type === 'skill') {
+    const name = document.getElementById('m-name').value.trim();
+    const pct = parseInt(document.getElementById('m-pct').value);
+    if (!name) return;
+    if (id) {
+      const item = data.skills.find(x => x.id === id);
+      item.name = name; item.pct = pct;
+    } else {
+      const c = SKILL_COLORS[data.skills.length % SKILL_COLORS.length];
+      data.skills.push({ id: genId(), name, pct, color: c });
+    }
+  }
+
+  if (type === 'job') {
+    const company = document.getElementById('m-company').value.trim();
+    const position = document.getElementById('m-position').value.trim();
+    const date = document.getElementById('m-date').value.trim();
+    const status = document.getElementById('m-status').value;
+    const notes = document.getElementById('m-notes').value.trim();
+    if (!company) return;
+    if (id) {
+      const item = data.jobs.find(x => x.id === id);
+      Object.assign(item, { company, position, date, status, notes });
+    } else {
+      data.jobs.push({ id: genId(), company, position, date, status, notes });
+    }
+  }
+
+  if (type === 'course') {
+    const name = document.getElementById('m-name').value.trim();
+    const platform = document.getElementById('m-platform').value.trim();
+    const progress = document.getElementById('m-progress').value;
+    const target = document.getElementById('m-target').value.trim();
+    if (!name) return;
+    if (id) {
+      const item = data.courses.find(x => x.id === id);
+      Object.assign(item, { name, platform, progress, target });
+    } else {
+      data.courses.push({ id: genId(), name, platform, progress, target });
+    }
+  }
+
+  closeModal();
+  render();
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('modal-overlay').classList.contains('show')) return;
+  if (e.key === 'Enter') saveModal();
+  if (e.key === 'Escape') closeModal();
+});
+
+// ========== INIT ==========
+render();
+</script>
+</body>
+</html>
