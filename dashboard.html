@@ -63,6 +63,28 @@
   }
   .rabbit-progress-label span { font-size: 1.8rem; color: var(--primary-dark); }
 
+  /* Moving ground lines - parallax effect */
+  .rabbit-hero::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 40%;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(255,255,255,.06) 80px,
+      rgba(255,255,255,.06) 82px
+    );
+    animation: groundScroll 3s linear infinite;
+  }
+  @keyframes groundScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-82px); }
+  }
+
   /* Ground path */
   .ground-path {
     position: absolute;
@@ -72,6 +94,7 @@
     height: 6px;
     background: rgba(255,255,255,.5);
     border-radius: 6px;
+    z-index: 1;
   }
   .ground-fill {
     height: 100%;
@@ -116,35 +139,41 @@
     position: absolute;
     bottom: 46px;
     transition: left 1.2s cubic-bezier(.34,1.56,.64,1);
+    z-index: 2;
   }
   .rabbit-svg {
     transition: transform .6s ease;
   }
+  /* Idle hop - rabbit always looks alive */
+  .rabbit-svg {
+    animation: idleHop 1.2s ease-in-out infinite;
+  }
+  @keyframes idleHop {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+  /* Big jump on progress update */
   .rabbit-container.jumping .rabbit-svg {
-    animation: bunnyJump 0.6s ease;
+    animation: bunnyJump 0.8s ease;
   }
   @keyframes bunnyJump {
     0%   { transform: translateY(0) rotate(0deg); }
-    30%  { transform: translateY(-40px) rotate(-8deg); }
-    50%  { transform: translateY(-50px) rotate(-5deg); }
-    80%  { transform: translateY(-10px) rotate(2deg); }
+    25%  { transform: translateY(-45px) rotate(-10deg); }
+    45%  { transform: translateY(-55px) rotate(-5deg); }
+    75%  { transform: translateY(-8px) rotate(3deg); }
     100% { transform: translateY(0) rotate(0deg); }
   }
 
-  /* Clouds */
+  /* Clouds - static backdrop */
   .cloud {
     position: absolute;
-    opacity: .35;
+    opacity: .25;
     font-size: 2rem;
     color: white;
-    animation: cloudDrift 20s linear infinite;
   }
-  .cloud:nth-child(2) { animation-duration: 28s; animation-delay: -8s; top: 15px; font-size: 1.5rem; }
-  .cloud:nth-child(3) { animation-duration: 35s; animation-delay: -15s; top: 30px; font-size: 2.5rem; opacity: .2; }
-  @keyframes cloudDrift {
-    0%   { left: -10%; }
-    100% { left: 110%; }
-  }
+  .cloud:nth-child(1) { top: 12px; left: 15%; }
+  .cloud:nth-child(2) { top: 20px; left: 55%; font-size: 1.5rem; opacity: .2; }
+  .cloud:nth-child(3) { top: 8px; left: 82%; font-size: 2.5rem; opacity: .15; }
 
   /* Level badge */
   .level-badge {
@@ -474,6 +503,54 @@
     font-size: .8rem;
     margin-left: 12px;
   }
+
+  /* Networking */
+  .net-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .net-card {
+    background: var(--primary-bg);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .net-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .net-card-name { font-weight: 700; font-size: .95rem; color: var(--primary-dark); }
+  .net-card-role { font-size: .8rem; color: var(--text-light); }
+  .net-card-company { font-size: .82rem; color: var(--text); font-weight: 500; }
+  .net-card-date { font-size: .72rem; color: var(--text-light); }
+  .net-card-notes { font-size: .83rem; color: var(--text-light); margin-top: 6px; line-height: 1.5; }
+  .net-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 8px;
+    font-size: .7rem; font-weight: 600; margin-right: 4px; margin-top: 6px;
+  }
+  .net-tag.linkedin { background: #DBEAFE; color: #1E40AF; }
+  .net-tag.event { background: #D1FAE5; color: #065F46; }
+  .net-tag.referral { background: #FEF3C7; color: #92400E; }
+  .net-tag.informational { background: #EDE9FE; color: #5B21B6; }
+  .net-tag.followup { background: #FEE2E2; color: #991B1B; }
+  .net-tag.coffee { background: #FFEDD5; color: #9A3412; }
+
+  /* Insights */
+  .insight-list { list-style: none; }
+  .insight-list li {
+    padding: 12px 14px;
+    background: var(--primary-bg);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: .88rem;
+    border-left: 4px solid var(--primary-light);
+    line-height: 1.5;
+  }
+  .insight-list li:last-child { margin-bottom: 0; }
+  .insight-source {
+    font-size: .75rem;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
 </style>
 </head>
 <body>
@@ -615,6 +692,27 @@
     <button class="add-btn" onclick="openModal('course')">+ Add Course</button>
   </div>
 
+  <!-- Networking -->
+  <div class="two-col">
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">&#129309;</span>
+        Networking Tracker
+      </div>
+      <div class="net-cards" id="net-cards"></div>
+      <button class="add-btn" onclick="openModal('network')">+ Add Contact</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">&#128161;</span>
+        Career Insights
+      </div>
+      <ul class="insight-list" id="insight-list"></ul>
+      <button class="add-btn" onclick="openModal('insight')">+ Add Insight</button>
+    </div>
+  </div>
+
   <div class="footer">Made with care for Kylie</div>
 </div>
 
@@ -673,6 +771,19 @@ const DEFAULT_DATA = {
     { id: 5, name: 'LeetCode Practice (Easy level)', platform: 'LeetCode', progress: 'not-started', target: '2026/05' },
     { id: 6, name: 'Data Engineering Tools (Airflow, Spark, dbt)', platform: 'Self-study', progress: 'not-started', target: '2026/06' },
     { id: 7, name: 'Upwork Portfolio Building', platform: 'Upwork', progress: 'not-started', target: '2026/05' },
+  ],
+  network: [
+    { id: 1, name: 'LinkedIn Recruiter (Lynxedge)', company: 'Lynxedge Solutions', role: 'Hiring Manager', date: '2026/01', channel: 'linkedin', notes: 'Applied for IT Technician Tier 1, referred by LinkedIn contact', followup: false },
+    { id: 2, name: 'Suzie Farrell', company: 'The Salvation Army', role: 'Executive Director, Grace Health Services', date: '2025/12', channel: 'referral', notes: 'Hiring manager for Admin Coordinator role, completed 2 rounds of interviews', followup: false },
+    { id: 3, name: 'Yining', company: '', role: 'Technical Contact', date: '2025/11', channel: 'informational', notes: 'Will review DE/SWE resume draft for technical accuracy', followup: true },
+  ],
+  insights: [
+    { id: 1, text: 'Interview answers should lead with outcomes/impact first, then explain how. Spend 80% on solution, 20% on problem.', source: 'Coaching Session - Dec 2025' },
+    { id: 2, text: 'Match each interview question to the hidden competency it tests. "Biggest challenge" = problem-solving. "Disagreement with supervisor" = conflict management.', source: 'Coaching Session - Dec 2025' },
+    { id: 3, text: 'The Salvation Army Excel automation story is the signature proof point — reuse for any "workflow improvement" or "how can you help us" question.', source: 'Coaching Session - Jan 2026' },
+    { id: 4, text: 'Position yourself as mid-level SWE/DE, not entry-level. MSc + 20 years of computing + recent diploma = strong candidate.', source: 'Coaching Session - Nov 2025' },
+    { id: 5, text: 'Treat the seasonal job as a mini-DE project: document before/after process, add metrics, sketch the system workflow.', source: 'Coaching Session - Nov 2025' },
+    { id: 6, text: 'Don\'t over-script interview answers. Use light keyword notes instead — you sound more natural and relaxed without a script.', source: 'Coaching Session - Jan 2026' },
   ],
   worklog: {
     // keyed by date string 'YYYY-MM-DD'
@@ -1038,6 +1149,8 @@ function render() {
   renderSkills();
   renderJobs();
   renderCourses();
+  renderNetwork();
+  renderInsights();
   save();
 }
 
@@ -1053,6 +1166,7 @@ function renderStats() {
     <div class="stat-card"><div class="number" style="color:var(--primary)">${jobsApplied}</div><div class="label">Jobs Tracked</div></div>
     <div class="stat-card"><div class="number" style="color:var(--warning)">${interviews}</div><div class="label">Interviews</div></div>
     <div class="stat-card"><div class="number" style="color:#10B981">${weekendWorked}</div><div class="label">Weekend Days Worked</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--primary-dark)">${data.network ? data.network.length : 0}</div><div class="label">Contacts</div></div>
   `;
 }
 
@@ -1138,6 +1252,52 @@ function renderCourses() {
       </td>
     </tr>
   `).join('');
+}
+
+function renderNetwork() {
+  const el = document.getElementById('net-cards');
+  el.innerHTML = data.network.map(n => `
+    <div class="net-card">
+      <div class="net-card-header">
+        <div>
+          <div class="net-card-name">${esc(n.name)}</div>
+          <div class="net-card-company">${esc(n.company) || '--'}</div>
+          <div class="net-card-role">${esc(n.role)}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="net-card-date">${n.date}</div>
+          <span class="item-actions" style="display:inline-flex; margin-top:4px;">
+            <button class="edit-btn" onclick="openModal('network',${n.id})" title="Edit">&#9998;</button>
+            <button class="del-btn" onclick="deleteItem('network',${n.id})" title="Delete">&#10005;</button>
+          </span>
+        </div>
+      </div>
+      <div>
+        <span class="net-tag ${n.channel}">${channelLabel(n.channel)}</span>
+        ${n.followup ? '<span class="net-tag followup">Needs Follow-up</span>' : ''}
+      </div>
+      <div class="net-card-notes">${esc(n.notes)}</div>
+    </div>
+  `).join('');
+}
+
+function renderInsights() {
+  const el = document.getElementById('insight-list');
+  el.innerHTML = data.insights.map(ins => `
+    <li>
+      ${esc(ins.text)}
+      <div class="insight-source">${esc(ins.source)}
+        <span class="item-actions" style="display:inline-flex; margin-left:8px;">
+          <button class="edit-btn" onclick="openModal('insight',${ins.id})" title="Edit">&#9998;</button>
+          <button class="del-btn" onclick="deleteItem('insights',${ins.id})" title="Delete">&#10005;</button>
+        </span>
+      </div>
+    </li>
+  `).join('');
+}
+
+function channelLabel(c) {
+  return { linkedin:'LinkedIn', event:'Event', referral:'Referral', informational:'Informational', coffee:'Coffee Chat', followup:'Follow-up' }[c] || c;
 }
 
 function statusLabel(s) {
@@ -1281,6 +1441,52 @@ function openModal(type, id) {
       </div>`;
   }
 
+  if (type === 'network') {
+    const item = id ? data.network.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Contact</h3>
+      <label>Name</label>
+      <input id="m-name" value="${item ? esc(item.name) : ''}" placeholder="e.g. Jane Smith">
+      <label>Company</label>
+      <input id="m-company" value="${item ? esc(item.company) : ''}" placeholder="e.g. Google">
+      <label>Role / Title</label>
+      <input id="m-role" value="${item ? esc(item.role) : ''}" placeholder="e.g. Engineering Manager">
+      <label>Date</label>
+      <input id="m-date" value="${item ? item.date : ''}" placeholder="e.g. 2026/05">
+      <label>Channel</label>
+      <select id="m-channel">
+        <option value="linkedin" ${item && item.channel==='linkedin' ? 'selected':''}>LinkedIn</option>
+        <option value="event" ${item && item.channel==='event' ? 'selected':''}>Event / Meetup</option>
+        <option value="referral" ${item && item.channel==='referral' ? 'selected':''}>Referral</option>
+        <option value="informational" ${item && item.channel==='informational' ? 'selected':''}>Informational</option>
+        <option value="coffee" ${item && item.channel==='coffee' ? 'selected':''}>Coffee Chat</option>
+      </select>
+      <label>Notes / Key Takeaway</label>
+      <input id="m-notes" value="${item ? esc(item.notes) : ''}" placeholder="What did you discuss? Any action items?">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+        <input type="checkbox" id="m-followup" ${item && item.followup ? 'checked' : ''} style="width:auto;">
+        Needs Follow-up
+      </label>
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
+  if (type === 'insight') {
+    const item = id ? data.insights.find(x => x.id === id) : null;
+    html = `
+      <h3>${id ? 'Edit' : 'Add'} Insight</h3>
+      <label>Insight / Lesson Learned</label>
+      <textarea id="m-text" rows="3" style="resize:vertical;" placeholder="e.g. Always quantify impact with numbers — even rough estimates strengthen credibility">${item ? esc(item.text) : ''}</textarea>
+      <label>Source</label>
+      <input id="m-source" value="${item ? esc(item.source) : ''}" placeholder="e.g. Coffee chat with Jane, LinkedIn article, Coaching session">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
   modal.innerHTML = html;
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(() => { const inp = modal.querySelector('input'); if(inp) inp.focus(); }, 100);
@@ -1365,6 +1571,35 @@ function saveModal() {
     addWorkTask(text);
     closeModal();
     return;
+  }
+
+  if (type === 'network') {
+    const name = document.getElementById('m-name').value.trim();
+    const company = document.getElementById('m-company').value.trim();
+    const role = document.getElementById('m-role').value.trim();
+    const date = document.getElementById('m-date').value.trim();
+    const channel = document.getElementById('m-channel').value;
+    const notes = document.getElementById('m-notes').value.trim();
+    const followup = document.getElementById('m-followup').checked;
+    if (!name) return;
+    if (id) {
+      const item = data.network.find(x => x.id === id);
+      Object.assign(item, { name, company, role, date, channel, notes, followup });
+    } else {
+      data.network.push({ id: genId(), name, company, role, date, channel, notes, followup });
+    }
+  }
+
+  if (type === 'insight') {
+    const text = document.getElementById('m-text').value.trim();
+    const source = document.getElementById('m-source').value.trim();
+    if (!text) return;
+    if (id) {
+      const item = data.insights.find(x => x.id === id);
+      Object.assign(item, { text, source });
+    } else {
+      data.insights.push({ id: genId(), text, source });
+    }
   }
 
   closeModal();
