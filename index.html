@@ -8,20 +8,20 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root {
-    --primary: #4F6BF0;
-    --primary-light: #8B9CF7;
-    --primary-dark: #3A50C2;
-    --primary-bg: #EEF1FE;
-    --accent: #6C7FF2;
-    --accent-light: #B4BFF9;
-    --success: #34C88A;
-    --warning: #F0A83A;
-    --bg: #F4F6FB;
+    --primary: #7C5CFC;
+    --primary-light: #A78BFA;
+    --primary-dark: #6344E0;
+    --primary-bg: #EDE8FF;
+    --accent: #9B7FFD;
+    --accent-light: #C4B5FD;
+    --success: #5BB98C;
+    --warning: #E5A44D;
+    --bg: #FAFAFE;
     --card: #FFFFFF;
-    --text: #1A2138;
-    --text-light: #6B7A99;
-    --border: #E8ECF4;
-    --danger: #E85D5D;
+    --text: #1E1B2E;
+    --text-light: #7E7896;
+    --border: #E8E5F0;
+    --danger: #E25C6A;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,7 +36,7 @@
 
   /* ===== HEADER ===== */
   .header {
-    background: linear-gradient(135deg, #2B3A67 0%, #3D5291 40%, #5B72C4 100%);
+    background: linear-gradient(135deg, #2D1B69 0%, #4A2D8A 40%, #7C5CFC 100%);
     color: white;
     padding: 44px 20px 22px;
     text-align: center;
@@ -47,7 +47,7 @@
 
   /* ===== RABBIT HERO ===== */
   .rabbit-hero {
-    background: linear-gradient(180deg, #7BA4E0 0%, #C5D8F5 38%, #A8DEB5 40%, #6BC88B 100%);
+    background: linear-gradient(180deg, #B8A4F8 0%, #DDD6FE 38%, #C7D2FE 40%, #A78BFA 100%);
     padding: 0 20px 20px;
     position: relative;
     overflow: hidden;
@@ -60,13 +60,13 @@
   }
   .rabbit-progress-label {
     text-align: center;
-    color: #2B3A67;
+    color: #2D1B69;
     font-weight: 600;
     font-size: .95rem;
     padding-top: 8px;
     letter-spacing: -.01em;
   }
-  .rabbit-progress-label span { font-size: 1.7rem; color: #2B3A67; font-weight: 800; }
+  .rabbit-progress-label span { font-size: 1.7rem; color: #2D1B69; font-weight: 800; }
 
   /* Moving ground lines - parallax effect */
   .rabbit-hero::before {
@@ -135,7 +135,7 @@
     transform: translateX(-50%);
     font-size: .6rem;
     white-space: nowrap;
-    color: #1E3A5F;
+    color: #2D1B69;
     font-weight: 600;
   }
 
@@ -185,7 +185,7 @@
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,255,255,.2); backdrop-filter: blur(8px);
     padding: 6px 18px; border-radius: 20px;
-    font-size: .82rem; font-weight: 600; color: #2B3A67;
+    font-size: .82rem; font-weight: 600; color: #2D1B69;
     margin-top: 6px;
     border: 1px solid rgba(255,255,255,.35);
   }
@@ -204,11 +204,11 @@
     border-radius: 16px;
     padding: 20px 16px;
     text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 6px 16px rgba(79,107,240,.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 6px 16px rgba(124,92,252,.06);
     border: 1px solid var(--border);
     transition: transform .2s, box-shadow .2s;
   }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(79,107,240,.12); }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(124,92,252,.12); }
   .stat-card .number { font-size: 1.75rem; font-weight: 800; color: var(--primary); letter-spacing: -.03em; }
   .stat-card .label { font-size: .78rem; color: var(--text-light); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
 
@@ -218,7 +218,7 @@
     border-radius: 18px;
     padding: 26px;
     margin-bottom: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.03), 0 6px 20px rgba(79,107,240,.04);
+    box-shadow: 0 1px 3px rgba(0,0,0,.03), 0 6px 20px rgba(124,92,252,.04);
     border: 1px solid var(--border);
   }
   .section-title {
@@ -301,14 +301,14 @@
     display: inline-block; padding: 4px 12px; border-radius: 8px;
     font-size: .72rem; font-weight: 600; letter-spacing: .02em;
   }
-  .badge.applied { background: #EEF1FE; color: #4F6BF0; }
+  .badge.applied { background: #EDE8FF; color: #6344E0; }
   .badge.interview { background: #FEF7E6; color: #B8860B; }
   .badge.offer { background: #E6F9F0; color: #1A7F54; }
   .badge.rejected { background: #FDECEC; color: #C0392B; }
-  .badge.preparing { background: #F0EDFE; color: #6C5CE7; }
+  .badge.preparing { background: #F3EEFF; color: #7C5CFC; }
   .badge.done { background: #E6F9F0; color: #1A7F54; }
   .badge.in-progress { background: #FEF7E6; color: #B8860B; }
-  .badge.not-started { background: #F1F3F8; color: #6B7A99; }
+  .badge.not-started { background: #F0EDF5; color: #7E7896; }
 
   /* Buttons */
   .add-btn {
@@ -355,7 +355,7 @@
   }
   .modal input:focus, .modal select:focus, .modal textarea:focus {
     outline: none; border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(79,107,240,.1); background: white;
+    box-shadow: 0 0 0 3px rgba(124,92,252,.1); background: white;
   }
   .modal-btns { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
   .btn {
@@ -363,8 +363,8 @@
     font-size: .88rem; font-weight: 600; cursor: pointer; transition: all .2s;
     letter-spacing: -.01em;
   }
-  .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(79,107,240,.25); }
-  .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 16px rgba(79,107,240,.3); transform: translateY(-1px); }
+  .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(124,92,252,.25); }
+  .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 16px rgba(124,92,252,.3); transform: translateY(-1px); }
   .btn-secondary { background: var(--primary-bg); color: var(--text); }
   .btn-secondary:hover { background: var(--border); }
 
@@ -377,14 +377,14 @@
 
   /* Weekend Work Clock-in */
   .clockin-section {
-    background: linear-gradient(135deg, #1E2A4A 0%, #2B3F72 50%, #3D5291 100%);
+    background: linear-gradient(135deg, #1E1340 0%, #2D1B69 50%, #4A2D8A 100%);
     border-radius: 18px;
     padding: 28px;
     margin-bottom: 20px;
     color: white;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(30,42,74,.2);
+    box-shadow: 0 4px 24px rgba(45,27,105,.2);
   }
   .clockin-section .section-title { color: white; }
   .clockin-section .icon { background: rgba(255,255,255,.15); }
@@ -521,14 +521,14 @@
 
   /* Katherine's Reminders */
   .reminder-section {
-    background: linear-gradient(135deg, #2B3A67 0%, #3D5291 50%, #5B72C4 100%);
+    background: linear-gradient(135deg, #2D1B69 0%, #4A2D8A 50%, #7C5CFC 100%);
     border-radius: 18px;
     padding: 28px;
     margin-bottom: 20px;
     color: white;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 24px rgba(43,58,103,.2);
+    box-shadow: 0 4px 24px rgba(45,27,105,.2);
   }
   .reminder-section .section-title { color: white; }
   .reminder-section .icon { background: rgba(255,255,255,.15); }
@@ -598,10 +598,10 @@
     font-weight: 600;
     margin-top: 8px;
   }
-  .reminder-tag.mindset { background: rgba(253,186,116,.3); color: #FDE68A; }
-  .reminder-tag.strategy { background: rgba(147,197,253,.3); color: #BFDBFE; }
-  .reminder-tag.strength { background: rgba(134,239,172,.3); color: #BBF7D0; }
-  .reminder-tag.interview { background: rgba(196,181,253,.3); color: #DDD6FE; }
+  .reminder-tag.mindset { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+  .reminder-tag.strategy { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+  .reminder-tag.strength { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+  .reminder-tag.interview { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
 
   /* Networking */
   .net-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
@@ -609,10 +609,10 @@
     background: var(--primary-bg);
     border-radius: 14px;
     padding: 18px;
-    border: 1px solid rgba(79,107,240,.08);
+    border: 1px solid rgba(124,92,252,.08);
     transition: transform .2s, box-shadow .2s;
   }
-  .net-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,107,240,.08); }
+  .net-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,92,252,.08); }
   .net-card-header {
     display: flex;
     justify-content: space-between;
@@ -629,10 +629,10 @@
     font-size: .68rem; font-weight: 600; margin-right: 4px; margin-top: 6px;
     letter-spacing: .02em;
   }
-  .net-tag.linkedin { background: #E8EFFE; color: #3A50C2; }
+  .net-tag.linkedin { background: #EDE8FF; color: #6344E0; }
   .net-tag.event { background: #E6F9F0; color: #1A7F54; }
   .net-tag.referral { background: #FEF7E6; color: #B8860B; }
-  .net-tag.informational { background: #F0EDFE; color: #6C5CE7; }
+  .net-tag.informational { background: #F3EEFF; color: #7C5CFC; }
   .net-tag.followup { background: #FDECEC; color: #C0392B; }
   .net-tag.coffee { background: #FFF3EB; color: #C2601A; }
 
@@ -685,18 +685,18 @@
     <div class="rabbit-container" id="rabbit-container" style="left:5%">
       <svg class="rabbit-svg" width="70" height="80" viewBox="0 0 70 80" id="rabbit-svg">
         <!-- Left ear -->
-        <ellipse cx="22" cy="14" rx="7" ry="18" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
-        <ellipse cx="22" cy="14" rx="4" ry="13" fill="#BFDBFE"/>
+        <ellipse cx="22" cy="14" rx="7" ry="18" fill="#EDE8FF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <ellipse cx="22" cy="14" rx="4" ry="13" fill="#DDD6FE"/>
         <!-- Right ear -->
-        <ellipse cx="48" cy="14" rx="7" ry="18" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
-        <ellipse cx="48" cy="14" rx="4" ry="13" fill="#BFDBFE"/>
+        <ellipse cx="48" cy="14" rx="7" ry="18" fill="#EDE8FF" stroke="#C4B5FD" stroke-width="1.5"/>
+        <ellipse cx="48" cy="14" rx="4" ry="13" fill="#DDD6FE"/>
         <!-- Body -->
-        <ellipse cx="35" cy="58" rx="18" ry="20" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1.5"/>
+        <ellipse cx="35" cy="58" rx="18" ry="20" fill="#EDE8FF" stroke="#C4B5FD" stroke-width="1.5"/>
         <!-- Head -->
-        <circle cx="35" cy="36" r="16" fill="#F0F5FF" stroke="#93C5FD" stroke-width="1.5"/>
+        <circle cx="35" cy="36" r="16" fill="#F5F3FF" stroke="#C4B5FD" stroke-width="1.5"/>
         <!-- Eyes -->
-        <circle cx="29" cy="34" r="2.5" fill="#1E3A5F"/>
-        <circle cx="41" cy="34" r="2.5" fill="#1E3A5F"/>
+        <circle cx="29" cy="34" r="2.5" fill="#2D1B69"/>
+        <circle cx="41" cy="34" r="2.5" fill="#2D1B69"/>
         <circle cx="30" cy="33" r="1" fill="white"/>
         <circle cx="42" cy="33" r="1" fill="white"/>
         <!-- Nose -->
@@ -709,8 +709,8 @@
         <!-- Tail -->
         <circle cx="52" cy="62" r="5" fill="white" stroke="#BFDBFE" stroke-width="1"/>
         <!-- Feet -->
-        <ellipse cx="25" cy="76" rx="8" ry="4" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1"/>
-        <ellipse cx="45" cy="76" rx="8" ry="4" fill="#E8F0FE" stroke="#93C5FD" stroke-width="1"/>
+        <ellipse cx="25" cy="76" rx="8" ry="4" fill="#EDE8FF" stroke="#C4B5FD" stroke-width="1"/>
+        <ellipse cx="45" cy="76" rx="8" ry="4" fill="#EDE8FF" stroke="#C4B5FD" stroke-width="1"/>
       </svg>
     </div>
   </div>
@@ -734,7 +734,7 @@
     <!-- Milestones -->
     <div class="section">
       <div class="section-title">
-        <span class="icon">&#128197;</span>
+        <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
         Milestone Timeline
       </div>
       <div class="timeline" id="timeline"></div>
@@ -744,7 +744,7 @@
     <!-- Weekly Goals -->
     <div class="section">
       <div class="section-title">
-        <span class="icon">&#9989;</span>
+        <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
         This Week's Goals
       </div>
       <ul class="checklist" id="checklist"></ul>
@@ -755,7 +755,7 @@
   <!-- Skills -->
   <div class="section">
     <div class="section-title">
-      <span class="icon">&#128170;</span>
+      <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
       Skills Progress
     </div>
     <div class="skill-grid" id="skills"></div>
@@ -765,7 +765,7 @@
   <!-- Jobs -->
   <div class="section">
     <div class="section-title">
-      <span class="icon">&#128188;</span>
+      <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></span>
       Job Application Tracker
     </div>
     <div style="overflow-x:auto">
@@ -782,7 +782,7 @@
   <!-- Courses -->
   <div class="section">
     <div class="section-title">
-      <span class="icon">&#128218;</span>
+      <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>
       Learning Resources & Courses
     </div>
     <div style="overflow-x:auto">
@@ -799,7 +799,7 @@
   <!-- Katherine's Reminders -->
   <div class="reminder-section">
     <div class="section-title">
-      <span class="icon">&#128140;</span>
+      <span class="icon" style="background:rgba(255,255,255,.12)"><svg width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>
       Katherine's Reminders
     </div>
     <div class="reminder-carousel" id="reminder-carousel"></div>
@@ -814,7 +814,7 @@
   <div class="two-col">
     <div class="section">
       <div class="section-title">
-        <span class="icon">&#129309;</span>
+        <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span>
         Networking Tracker
       </div>
       <div class="net-cards" id="net-cards"></div>
@@ -823,7 +823,7 @@
 
     <div class="section">
       <div class="section-title">
-        <span class="icon">&#128161;</span>
+        <span class="icon"><svg width="16" height="16" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="#7C5CFC"/></svg></span>
         Career Insights
       </div>
       <ul class="insight-list" id="insight-list"></ul>
@@ -953,11 +953,11 @@ function calcOverall() {
 }
 
 function getLevel(pct) {
-  if (pct >= 90) return { lv: 5, name: 'Legendary Rabbit', emoji: '&#x1F451;' };
-  if (pct >= 70) return { lv: 4, name: 'Super Rabbit', emoji: '&#x1F31F;' };
-  if (pct >= 50) return { lv: 3, name: 'Growing Rabbit', emoji: '&#x1F407;' };
-  if (pct >= 25) return { lv: 2, name: 'Little Hopper', emoji: '&#x1F331;' };
-  return { lv: 1, name: 'Baby Bunny', emoji: '&#x1F95A;' };
+  if (pct >= 90) return { lv: 5, name: 'Legendary', emoji: '' };
+  if (pct >= 70) return { lv: 4, name: 'Advanced', emoji: '' };
+  if (pct >= 50) return { lv: 3, name: 'Growing', emoji: '' };
+  if (pct >= 25) return { lv: 2, name: 'Developing', emoji: '' };
+  return { lv: 1, name: 'Beginning', emoji: '' };
 }
 
 // ========== RABBIT RENDER ==========
@@ -967,7 +967,7 @@ function renderRabbit() {
 
   // Percentage display
   document.getElementById('pct-display').textContent = pct + '%';
-  document.getElementById('level-badge').innerHTML = `${level.emoji} Lv.${level.lv} ${level.name}`;
+  document.getElementById('level-badge').innerHTML = `Level ${level.lv} &middot; ${level.name}`;
 
   // Ground fill
   document.getElementById('ground-fill').style.width = pct + '%';
@@ -994,7 +994,7 @@ function renderRabbit() {
       const pos = (i / (data.milestones.length - 1)) * 100;
       const reached = m.status === 'completed';
       return `<div class="carrot ${reached ? 'reached' : ''}" style="left:${pos}%">
-        &#x1F955;
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="${reached ? '#7C5CFC' : 'rgba(255,255,255,.3)'}" stroke="white" stroke-width="1.5"/></svg>
         <div class="carrot-label">${esc(m.title.length > 12 ? m.title.slice(0, 12) + '..' : m.title)}</div>
       </div>`;
     }).join('');
@@ -1062,14 +1062,14 @@ function showEncouragement(type) {
   const toast = document.createElement('div');
   toast.style.cssText = `
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: linear-gradient(135deg, #2B3A67, #4F6BF0);
+    background: linear-gradient(135deg, #2D1B69, #7C5CFC);
     color: white; padding: 18px 30px; border-radius: 16px;
     font-size: .9rem; font-weight: 500; max-width: 480px; text-align: center;
-    box-shadow: 0 12px 48px rgba(43,58,103,.3); z-index: 2000;
+    box-shadow: 0 12px 48px rgba(45,27,105,.3); z-index: 2000;
     animation: toastIn .4s ease;
     line-height: 1.6; letter-spacing: -.01em;
   `;
-  toast.innerHTML = `&#x1F430; ${msg}`;
+  toast.innerHTML = msg;
   document.body.appendChild(toast);
 
   // Add animation keyframes if not already
@@ -1174,23 +1174,23 @@ function renderWorklog() {
 
   let html = `
     <div class="section-title">
-      <span class="icon">&#128296;</span>
+      <span class="icon" style="background:rgba(255,255,255,.12)"><svg width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
       Weekend Work Check-in
-      <span class="streak-badge">&#128293; ${streak} weekend days streak</span>
+      <span class="streak-badge">${streak} day streak</span>
     </div>`;
 
   // Inactivity warning
   if (inactive2Weeks) {
     html += `
       <div style="background:rgba(239,68,68,.2); border:2px solid rgba(239,68,68,.4); border-radius:12px; padding:14px 18px; margin-bottom:14px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <div style="font-size:1.5rem;">&#9888;&#65039;</div>
+        <div style="font-size:1.1rem;font-weight:700;">!</div>
         <div style="flex:1; min-width:200px;">
           <div style="font-weight:700; font-size:.95rem;">Haven't clocked in for ${daysSinceLast} days!</div>
           <div style="font-size:.82rem; opacity:.85; margin-top:2px;">It's okay — one small step gets you back on track.</div>
         </div>
         <a href="mailto:kylielnp@gmail.com?subject=Hey%20Kylie%20-%20Missing%20you%20on%20the%20Dashboard!%20%F0%9F%90%B0&body=Hi%20Kylie%2C%0A%0AI%20noticed%20you%20haven%27t%20clocked%20in%20on%20your%20Dream%20Dashboard%20for%20a%20couple%20of%20weeks.%20Just%20checking%20in%20%E2%80%94%20is%20everything%20okay%3F%0A%0AHere%27s%20my%20challenge%20for%20you%20this%20weekend%3A%0A1.%20Open%20your%20Dashboard%3A%20https%3A%2F%2Fkatherine-jellyphd.github.io%2FKylie%2F%0A2.%20Clock%20in%20on%20Saturday%20or%20Sunday%0A3.%20Do%20just%20ONE%20small%20thing%20(even%2015%20minutes%20counts!)%0A%0AYour%20rabbit%20misses%20you!%20%F0%9F%90%87%0A%0A-%20Katherine"
           style="padding:8px 18px; background:white; color:#EF4444; border-radius:10px; text-decoration:none; font-weight:700; font-size:.85rem; white-space:nowrap;">
-          &#128231; Send Reminder Email
+          Send Reminder
         </a>
       </div>`;
   }
@@ -1206,14 +1206,14 @@ function renderWorklog() {
     html += `<div class="clockin-date">${today} <span class="day-label">${dayLabel(today)}</span></div>`;
 
     if (!entry) {
-      html += `<button class="clockin-btn" onclick="clockIn()">&#9201; Clock In</button>`;
+      html += `<button class="clockin-btn" onclick="clockIn()">Clock In</button>`;
       html += `<div class="clockin-status">Not clocked in yet</div>`;
     } else if (!entry.clockOut) {
-      html += `<button class="clockin-btn active" disabled>&#9989; In @ ${entry.clockIn}</button>`;
-      html += `<button class="clockin-btn" onclick="clockOut()">&#9209; Clock Out</button>`;
+      html += `<button class="clockin-btn active" disabled>In @ ${entry.clockIn}</button>`;
+      html += `<button class="clockin-btn" onclick="clockOut()">Clock Out</button>`;
       html += `<div class="clockin-status">Working...</div>`;
     } else {
-      html += `<button class="clockin-btn checked-out" disabled>&#9989; ${entry.clockIn} - ${entry.clockOut}</button>`;
+      html += `<button class="clockin-btn checked-out" disabled>${entry.clockIn} - ${entry.clockOut}</button>`;
       html += `<div class="clockin-status">Done for today!</div>`;
     }
     html += `</div>`;
@@ -1284,8 +1284,8 @@ function renderStats() {
     <div class="stat-card"><div class="number" style="color:var(--success)">${coursesDone}</div><div class="label">Courses Completed</div></div>
     <div class="stat-card"><div class="number" style="color:var(--primary)">${jobsApplied}</div><div class="label">Jobs Tracked</div></div>
     <div class="stat-card"><div class="number" style="color:var(--warning)">${interviews}</div><div class="label">Interviews</div></div>
-    <div class="stat-card"><div class="number" style="color:#10B981">${weekendWorked}</div><div class="label">Weekend Days Worked</div></div>
-    <div class="stat-card"><div class="number" style="color:var(--primary-dark)">${data.network ? data.network.length : 0}</div><div class="label">Contacts</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--success)">${weekendWorked}</div><div class="label">Weekend Days Worked</div></div>
+    <div class="stat-card"><div class="number" style="color:var(--accent)">${data.network ? data.network.length : 0}</div><div class="label">Contacts</div></div>
   `;
 }
 
@@ -1319,7 +1319,7 @@ function renderGoals() {
   `).join('');
 }
 
-const SKILL_COLORS = ['#3A50C2,#8B9CF7','#4F6BF0,#B4BFF9','#5B72C4,#C5D1FA','#2B3A67,#8B9CF7','#4F6BF0,#C5D1FA','#3A50C2,#B4BFF9'];
+const SKILL_COLORS = ['#7C5CFC,#C4B5FD','#6344E0,#DDD6FE','#9B7FFD,#EDE8FF','#4A2D8A,#A78BFA','#7C5CFC,#DDD6FE','#6344E0,#C4B5FD'];
 
 function renderSkills() {
   const el = document.getElementById('skills');
