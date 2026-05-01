@@ -331,6 +331,149 @@
   }
 
   .range-val { font-weight: 700; color: var(--primary); }
+
+  /* Weekend Work Clock-in */
+  .clockin-section {
+    background: linear-gradient(135deg, #1E3A5F, #2563EB);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .clockin-section .section-title { color: white; }
+  .clockin-section .icon { background: rgba(255,255,255,.15); }
+
+  .clockin-today {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .clockin-date {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .clockin-date .day-label {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: .8rem;
+    margin-left: 8px;
+  }
+  .clockin-btn {
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .clockin-btn:hover { background: white; color: var(--primary-dark); }
+  .clockin-btn.active {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+  .clockin-btn.checked-out {
+    background: rgba(255,255,255,.15);
+    border-color: rgba(255,255,255,.3);
+    color: rgba(255,255,255,.6);
+    cursor: default;
+  }
+  .clockin-status {
+    font-size: .85rem;
+    opacity: .85;
+    margin-left: auto;
+  }
+  .clockin-not-weekend {
+    font-size: .95rem;
+    opacity: .7;
+    padding: 12px 0;
+  }
+
+  /* Work log */
+  .work-log-list { list-style: none; margin-top: 12px; }
+  .work-log-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.1);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: .88rem;
+  }
+  .work-log-list li:last-child { margin-bottom: 0; }
+  .work-log-time {
+    font-size: .75rem;
+    opacity: .7;
+    flex-shrink: 0;
+    min-width: 90px;
+  }
+  .work-log-task { flex: 1; }
+
+  .add-btn-light {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 2px dashed rgba(255,255,255,.4);
+    background: transparent;
+    color: rgba(255,255,255,.85);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .add-btn-light:hover { background: rgba(255,255,255,.15); border-color: white; color: white; }
+
+  /* History calendar */
+  .work-history { margin-top: 16px; }
+  .work-history-title {
+    font-size: .85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    opacity: .8;
+  }
+  .work-cal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .work-cal-day {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    font-weight: 600;
+  }
+  .work-cal-day.empty { background: rgba(255,255,255,.05); color: rgba(255,255,255,.25); }
+  .work-cal-day.worked { background: var(--success); color: white; }
+  .work-cal-day.today { box-shadow: 0 0 0 2px white; }
+  .work-cal-day.missed { background: rgba(255,255,255,.1); color: rgba(255,255,255,.4); }
+
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,.15);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: .8rem;
+    margin-left: 12px;
+  }
 </style>
 </head>
 <body>
@@ -399,6 +542,9 @@
 </div>
 
 <div class="container">
+
+  <!-- Weekend Work Clock-in -->
+  <div class="clockin-section" id="clockin-section"></div>
 
   <!-- Stats -->
   <div class="stats-row" id="stats-row"></div>
@@ -527,7 +673,11 @@ const DEFAULT_DATA = {
     { id: 5, name: 'LeetCode Practice (Easy level)', platform: 'LeetCode', progress: 'not-started', target: '2026/05' },
     { id: 6, name: 'Data Engineering Tools (Airflow, Spark, dbt)', platform: 'Self-study', progress: 'not-started', target: '2026/06' },
     { id: 7, name: 'Upwork Portfolio Building', platform: 'Upwork', progress: 'not-started', target: '2026/05' },
-  ]
+  ],
+  worklog: {
+    // keyed by date string 'YYYY-MM-DD'
+    // each entry: { clockIn: 'HH:MM', clockOut: 'HH:MM'|null, tasks: [{id, text, time}] }
+  }
 };
 
 let data;
@@ -623,8 +773,234 @@ function renderRabbit() {
 }
 
 // ========== RENDER FUNCTIONS ==========
+// ========== WORKLOG HELPERS ==========
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function dayOfWeek(dateStr) {
+  return new Date(dateStr + 'T12:00:00').getDay(); // 0=Sun, 6=Sat
+}
+function isWeekend(dateStr) {
+  const d = dayOfWeek(dateStr);
+  return d === 0 || d === 6;
+}
+function nowTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function dayLabel(dateStr) {
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return days[dayOfWeek(dateStr)];
+}
+
+// ========== ENCOURAGEMENT (Behavioral Psychology) ==========
+const ENCOURAGE = {
+  clockIn: [
+    "Showing up is the hardest part — and you just did it! (Activation Energy)",
+    "Every expert was once a beginner who chose to start. You're building momentum!",
+    "The habit loop starts with a cue: you just triggered yours. Let's go!",
+    "Consistency beats intensity. You're proving that right now.",
+    "Small steps, big results. Your future self will thank you for today!",
+  ],
+  clockOut: [
+    "You did it! Every session strengthens the neural pathways to success.",
+    "Completion triggers dopamine — enjoy that feeling, you earned it!",
+    "Another day invested in your future. That's compound growth in action!",
+    "Rest is part of the process. Recover, reflect, and come back stronger.",
+    "You're building proof that you can follow through. That's your superpower.",
+  ],
+  taskDone: [
+    "One more task checked off — that's the progress principle at work!",
+    "Small wins create positive spirals. You're in one right now!",
+    "Each completed task reinforces your identity as someone who delivers.",
+    "You're not just doing tasks — you're building the habit of excellence.",
+    "Momentum is real. Feel it? That's your brain rewarding consistency.",
+  ],
+  goalDone: [
+    "Goal achieved! Your brain just released a reward signal — savor it.",
+    "You set an intention and followed through. That's self-efficacy building!",
+    "Every goal you complete raises your internal standard. You're leveling up.",
+    "This is what growth feels like. Uncomfortable but unstoppable!",
+    "Research shows: people who track goals are 42% more likely to achieve them. You're in that group!",
+  ]
+};
+
+function showEncouragement(type) {
+  const msgs = ENCOURAGE[type] || ENCOURAGE.taskDone;
+  const msg = msgs[Math.floor(Math.random() * msgs.length)];
+
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, #1E40AF, #3B82F6);
+    color: white; padding: 16px 28px; border-radius: 14px;
+    font-size: .92rem; font-weight: 500; max-width: 500px; text-align: center;
+    box-shadow: 0 10px 40px rgba(37,99,235,.3); z-index: 2000;
+    animation: toastIn .4s ease;
+    line-height: 1.5;
+  `;
+  toast.innerHTML = `&#x1F430; ${msg}`;
+  document.body.appendChild(toast);
+
+  // Add animation keyframes if not already
+  if (!document.getElementById('toast-style')) {
+    const s = document.createElement('style');
+    s.id = 'toast-style';
+    s.textContent = `
+      @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+      @keyframes toastOut { from { opacity:1; transform: translateX(-50%) translateY(0); } to { opacity:0; transform: translateX(-50%) translateY(20px); } }
+    `;
+    document.head.appendChild(s);
+  }
+
+  setTimeout(() => {
+    toast.style.animation = 'toastOut .4s ease forwards';
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+function clockIn() {
+  const today = todayStr();
+  if (!data.worklog) data.worklog = {};
+  if (!data.worklog[today]) {
+    data.worklog[today] = { clockIn: nowTime(), clockOut: null, tasks: [] };
+  }
+  render();
+  showEncouragement('clockIn');
+}
+function clockOut() {
+  const today = todayStr();
+  if (data.worklog && data.worklog[today]) {
+    data.worklog[today].clockOut = nowTime();
+  }
+  render();
+  showEncouragement('clockOut');
+}
+function addWorkTask(text) {
+  const today = todayStr();
+  if (!data.worklog) data.worklog = {};
+  if (!data.worklog[today]) {
+    data.worklog[today] = { clockIn: nowTime(), clockOut: null, tasks: [] };
+  }
+  data.worklog[today].tasks.push({ id: genId(), text, time: nowTime() });
+  render();
+  showEncouragement('taskDone');
+}
+function deleteWorkTask(taskId) {
+  const today = todayStr();
+  if (data.worklog && data.worklog[today]) {
+    data.worklog[today].tasks = data.worklog[today].tasks.filter(t => t.id !== taskId);
+  }
+  render();
+}
+
+function renderWorklog() {
+  const el = document.getElementById('clockin-section');
+  if (!data.worklog) data.worklog = {};
+  const today = todayStr();
+  const weekend = isWeekend(today);
+  const entry = data.worklog[today];
+
+  // Calculate streak (consecutive weekends worked)
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 52; i++) {
+    d.setDate(d.getDate() - 1);
+    const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const dw = d.getDay();
+    if (dw === 0 || dw === 6) {
+      if (data.worklog[ds]) streak++;
+      else break;
+    }
+  }
+  if (entry) streak++;
+
+  // Recent weekend history (last 8 weekends)
+  const weekendDays = [];
+  const hd = new Date();
+  for (let i = 0; i < 60 && weekendDays.length < 16; i++) {
+    const ds = hd.getFullYear() + '-' + String(hd.getMonth()+1).padStart(2,'0') + '-' + String(hd.getDate()).padStart(2,'0');
+    if (hd.getDay() === 0 || hd.getDay() === 6) {
+      weekendDays.push(ds);
+    }
+    hd.setDate(hd.getDate() - 1);
+  }
+  weekendDays.reverse();
+
+  let html = `
+    <div class="section-title">
+      <span class="icon">&#128296;</span>
+      Weekend Work Check-in
+      <span class="streak-badge">&#128293; ${streak} weekend days streak</span>
+    </div>`;
+
+  if (!weekend) {
+    html += `
+      <div class="clockin-not-weekend">
+        Today is ${dayLabel(today)} — check-in is available on Saturdays & Sundays.
+        <br>Keep preparing and rest well for the weekend!
+      </div>`;
+  } else {
+    html += `<div class="clockin-today">`;
+    html += `<div class="clockin-date">${today} <span class="day-label">${dayLabel(today)}</span></div>`;
+
+    if (!entry) {
+      html += `<button class="clockin-btn" onclick="clockIn()">&#9201; Clock In</button>`;
+      html += `<div class="clockin-status">Not clocked in yet</div>`;
+    } else if (!entry.clockOut) {
+      html += `<button class="clockin-btn active" disabled>&#9989; In @ ${entry.clockIn}</button>`;
+      html += `<button class="clockin-btn" onclick="clockOut()">&#9209; Clock Out</button>`;
+      html += `<div class="clockin-status">Working...</div>`;
+    } else {
+      html += `<button class="clockin-btn checked-out" disabled>&#9989; ${entry.clockIn} - ${entry.clockOut}</button>`;
+      html += `<div class="clockin-status">Done for today!</div>`;
+    }
+    html += `</div>`;
+
+    // Task log for today
+    if (entry) {
+      html += `<div style="margin-top:8px;font-size:.85rem;opacity:.8;font-weight:600;">Today's work log:</div>`;
+      if (entry.tasks.length) {
+        html += `<ul class="work-log-list">`;
+        entry.tasks.forEach(t => {
+          html += `<li>
+            <span class="work-log-time">${t.time}</span>
+            <span class="work-log-task">${esc(t.text)}</span>
+            <button class="del-btn" style="color:rgba(255,255,255,.5)" onclick="deleteWorkTask(${t.id})">&#10005;</button>
+          </li>`;
+        });
+        html += `</ul>`;
+      }
+      if (!entry.clockOut) {
+        html += `<button class="add-btn-light" onclick="openModal('worktask')">+ Log a task</button>`;
+      }
+    }
+  }
+
+  // History
+  html += `
+    <div class="work-history">
+      <div class="work-history-title">Recent Weekends</div>
+      <div class="work-cal">`;
+  weekendDays.forEach(ds => {
+    const worked = !!data.worklog[ds];
+    const isToday = ds === today;
+    let cls = worked ? 'worked' : (ds < today ? 'missed' : 'empty');
+    if (isToday) cls += ' today';
+    const d = new Date(ds + 'T12:00:00');
+    const label = (d.getMonth()+1) + '/' + d.getDate();
+    const dayN = d.getDay() === 0 ? 'Sun' : 'Sat';
+    html += `<div class="work-cal-day ${cls}" title="${ds} (${dayN})${worked ? ' - Worked!' : ''}">${label}</div>`;
+  });
+  html += `</div></div>`;
+
+  el.innerHTML = html;
+}
+
 function render() {
   renderRabbit();
+  renderWorklog();
   renderStats();
   renderTimeline();
   renderGoals();
@@ -639,11 +1015,13 @@ function renderStats() {
   const coursesDone = data.courses.filter(c => c.progress === 'done').length;
   const jobsApplied = data.jobs.length;
   const interviews = data.jobs.filter(j => j.status === 'interview').length;
+  const weekendWorked = data.worklog ? Object.keys(data.worklog).length : 0;
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="number">${coursesTotal}</div><div class="label">Courses Planned</div></div>
     <div class="stat-card"><div class="number" style="color:var(--success)">${coursesDone}</div><div class="label">Courses Completed</div></div>
     <div class="stat-card"><div class="number" style="color:var(--primary)">${jobsApplied}</div><div class="label">Jobs Tracked</div></div>
     <div class="stat-card"><div class="number" style="color:var(--warning)">${interviews}</div><div class="label">Interviews</div></div>
+    <div class="stat-card"><div class="number" style="color:#10B981">${weekendWorked}</div><div class="label">Weekend Days Worked</div></div>
   `;
 }
 
@@ -742,7 +1120,11 @@ function esc(s) { if(!s) return ''; const d=document.createElement('div'); d.tex
 // ========== ACTIONS ==========
 function toggleGoal(id) {
   const g = data.goals.find(x => x.id === id);
-  if (g) { g.done = !g.done; render(); }
+  if (g) {
+    g.done = !g.done;
+    render();
+    if (g.done) showEncouragement('goalDone');
+  }
 }
 
 function deleteItem(list, id) {
@@ -857,6 +1239,17 @@ function openModal(type, id) {
       </div>`;
   }
 
+  if (type === 'worktask') {
+    html = `
+      <h3>Log Work Task</h3>
+      <label>What did you work on?</label>
+      <input id="m-text" placeholder="e.g. Updated resume for DE role, practiced LeetCode, researched job postings...">
+      <div class="modal-btns">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveModal()">Save</button>
+      </div>`;
+  }
+
   modal.innerHTML = html;
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(() => { const inp = modal.querySelector('input'); if(inp) inp.focus(); }, 100);
@@ -933,6 +1326,14 @@ function saveModal() {
     } else {
       data.courses.push({ id: genId(), name, platform, progress, target });
     }
+  }
+
+  if (type === 'worktask') {
+    const text = document.getElementById('m-text').value.trim();
+    if (!text) return;
+    addWorkTask(text);
+    closeModal();
+    return;
   }
 
   closeModal();
