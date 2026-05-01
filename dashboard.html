@@ -902,31 +902,38 @@ function renderWorklog() {
   const weekend = isWeekend(today);
   const entry = data.worklog[today];
 
-  // Calculate streak (consecutive weekends worked)
+  // Start date: 2026-05-02 (this Saturday)
+  const START_DATE = '2026-05-02';
+
+  // Calculate streak (consecutive weekends worked, only from START_DATE)
   let streak = 0;
   const d = new Date();
-  for (let i = 0; i < 52; i++) {
-    d.setDate(d.getDate() - 1);
+  // count backwards from today
+  const streakDays = [];
+  for (let i = 0; i < 60; i++) {
     const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    const dw = d.getDay();
-    if (dw === 0 || dw === 6) {
-      if (data.worklog[ds]) streak++;
-      else break;
-    }
+    if (ds < START_DATE) break;
+    if (d.getDay() === 0 || d.getDay() === 6) streakDays.unshift(ds);
+    d.setDate(d.getDate() - 1);
   }
-  if (entry) streak++;
+  // count streak from most recent backwards
+  for (let i = streakDays.length - 1; i >= 0; i--) {
+    if (data.worklog[streakDays[i]]) streak++;
+    else if (streakDays[i] < today) break; // don't break streak for today/future
+  }
 
-  // Recent weekend history (last 8 weekends)
+  // Weekend history: from START_DATE forward (up to 16 days into future)
   const weekendDays = [];
-  const hd = new Date();
-  for (let i = 0; i < 60 && weekendDays.length < 16; i++) {
+  const hd = new Date(START_DATE + 'T12:00:00');
+  const futureLimit = new Date();
+  futureLimit.setDate(futureLimit.getDate() + 30);
+  while (weekendDays.length < 16 && hd <= futureLimit) {
     const ds = hd.getFullYear() + '-' + String(hd.getMonth()+1).padStart(2,'0') + '-' + String(hd.getDate()).padStart(2,'0');
     if (hd.getDay() === 0 || hd.getDay() === 6) {
       weekendDays.push(ds);
     }
-    hd.setDate(hd.getDate() - 1);
+    hd.setDate(hd.getDate() + 1);
   }
-  weekendDays.reverse();
 
   let html = `
     <div class="section-title">
